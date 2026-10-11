@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: 123123
+      POSTGRES_DB: visits_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d visits_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+
+volumes:
+  pgdata:
