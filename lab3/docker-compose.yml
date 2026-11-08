@@ -1,0 +1,14 @@
+services:
+  scooter-service:
+    build: .
+    ports:
+      - "${PORT:-8000}:${PORT:-8000}"
+    environment:
+      PORT: ${PORT:-8000}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('PORT','8000')+'/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
